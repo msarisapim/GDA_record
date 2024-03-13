@@ -1,2 +1,2 @@
-# GDA_record
-Nutrition Recording System using OCR
+# Nutrition Recording System using OCR
+Developed an innovative Nutrition Recording System aimed at streamlining dietary tracking by integrating YOLO (You Only Look Once) object detection with Optical Character Recognition (OCR). This system is designed to automatically identify and analyze nutritional information from food packaging, enabling users to effortlessly record and monitor their dietary intake.
