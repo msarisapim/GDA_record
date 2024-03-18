@@ -12,10 +12,35 @@ class_index, x1, y1, x2, y2, x3, y3, x4, y4
 
 
 # Directory structure
-- GDA-OBB
-    ├─ images
-    │   ├─ train
-    │   └─ val
-    └─ labels
-        ├─ train
-        └─ val
+\documentclass{article}
+\usepackage[edges]{forest}
+
+\begin{document}
+
+\begin{forest}
+  for tree={
+    grow=east,
+    parent anchor=east, 
+    child anchor=west,
+    anchor=west,
+    draw,
+    align=center,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}] 
+      (!u.parent anchor) -- +(5pt,0) |- (.child anchor)\forestoption{edge label};
+    },
+  }
+[GDA-OBB
+  [labels
+    [val]
+    [train]
+  ]
+  [images
+    [val]
+    [train]
+  ]
+]
+\end{forest}
+
+\end{document}
+
