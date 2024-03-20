@@ -37,3 +37,46 @@ class_index, x1, y1, x2, y2, x3, y3, x4, y4
         └─ val_original
 
 ```
+# Application
+
+## Nutritional Values Detector
+
+This repository contains the `ocr_app.py` script, which uses the Ultralytics YOLO model and EasyOCR to detect nutritional information on food packages from images. It's designed to extract key nutritional values such as energy (calories), sugar, fat, and sodium content.
+
+### Prerequisites
+
+Before running the script, ensure you have the following prerequisites installed:
+
+- Python 3.8 or later
+- OpenCV
+- Ultralytics YOLO
+- EasyOCR
+- Streamlit
+
+You can install the necessary Python libraries using pip:
+
+```sh
+pip install opencv-python-headless ultralytics easyocr streamlit
+```
+
+Note: Depending on your system, you might need opencv-python instead of opencv-python-headless.
+
+### Usage
+To use the script, first clone this repository to your local machine:
+
+```
+git clone https://github.com/yourusername/your-repository-name.git
+cd your-repository-name
+```
+
+Then, run the Streamlit application:
+```sh
+streamlit run ocr_app.py
+```
+The Streamlit application will start, and you can navigate to the URL provided in your terminal to interact with the application.
+
+### Features
+- Browse and select images of food packages.
+- Detect and display key nutritional values: Energy (kcal), Sugar (g), Fat (g), and Sodium (mg).
+- Visualize the detected areas on the food package image.
+
