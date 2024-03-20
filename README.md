@@ -17,16 +17,16 @@ Developed an innovative Nutrition Recording System aimed at streamlining dietary
 
 --------
 
-# Yolo OBB
+## Yolo OBB
 reference: https://docs.ultralytics.com/datasets/obb/
 
 
-# YOLO OBB Format
+### YOLO OBB Format
 The YOLO OBB format uses four normalized corner points to define bounding boxes, structured as:
 class_index, x1, y1, x2, y2, x3, y3, x4, y4
 
 
-# Directory structure
+### Directory structure
 ```
 - GDA-OBB
     ├─ images
