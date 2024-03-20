@@ -14,6 +14,7 @@ Developed an innovative Nutrition Recording System aimed at streamlining dietary
   - Rotate/Skew
 
 3.  OCR part
+- Extract only 1st number
 
 --------
 
