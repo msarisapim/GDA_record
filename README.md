@@ -61,6 +61,14 @@ pip install opencv-python-headless ultralytics easyocr streamlit
 
 Note: Depending on your system, you might need opencv-python instead of opencv-python-headless.
 
+
+### Model Download
+The model best.pt used by the script is hosted on Google Drive. Download it using the following link:
+
+[Download best.pt](https://drive.google.com/file/d/19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ/view?usp=sharing)
+
+After downloading, save the model file in the same directory as the ocr_app.py script or adjust the script to point to the location where you saved the model.
+
 ### Usage
 To use the script, first clone this repository to your local machine:
 
