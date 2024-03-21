@@ -91,8 +91,8 @@ def main():
     st.title("Nutritional Values Detector")
 
     # Model URL on Google Drive
-    # model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ' #size L
-    model_url = 'https://drive.google.com/file/d/1Tjf1lVvHf6BMmazxZ0L7sa1rKRFHI9oR/view?usp=sharing' #size n
+    model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ' #size L
+    # model_url = 'https://drive.google.com/file/d/1Tjf1lVvHf6BMmazxZ0L7sa1rKRFHI9oR/view?usp=sharing' #size n
     model_path = 'best.pt'
 
     # Download the model if it doesn't exist
