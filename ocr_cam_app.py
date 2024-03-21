@@ -7,7 +7,7 @@ import re
 import gdown
 import os
 
-@st.experimental_memo
+@st.cache_data
 def process_results(result):
     # Define colors for each label in BGR format
     colors = {0: (0, 0, 255),    # Red
@@ -57,7 +57,7 @@ def img2gray(img):
     return gray
 
 
-@st.experimental_memo
+@st.cache_data
 def img2text(img):
     reader = easyocr.Reader(['th'])
     text_list = reader.readtext(img)
@@ -82,13 +82,13 @@ def extract_1stnum(text):
         return "N/A"
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def download_model(url, output):
     """Download the model file from Google Drive."""
     if not os.path.exists(output):
         gdown.download(url, output, quiet=False)
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def load_model(model_path):
     model = YOLO(model_path)
     return model
