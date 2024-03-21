@@ -7,6 +7,7 @@ import re
 import gdown
 import os
 
+@st.experimental_memo
 def process_results(result):
     # Define colors for each label in BGR format
     colors = {0: (0, 0, 255),    # Red
@@ -56,11 +57,11 @@ def img2gray(img):
     return gray
 
 
-
+@st.experimental_memo
 def img2text(img):
     reader = easyocr.Reader(['th'])
     text_list = reader.readtext(img)
-    text = ' '.join([result[1] for result in text_list]) # Extract text from each result tuple and join them into a single string
+    text = ' '.join([result[1] for result in text_list])
     return text
 
 
@@ -81,10 +82,17 @@ def extract_1stnum(text):
         return "N/A"
 
 
+@st.cache(allow_output_mutation=True)
 def download_model(url, output):
     """Download the model file from Google Drive."""
     if not os.path.exists(output):
         gdown.download(url, output, quiet=False)
+
+@st.cache(allow_output_mutation=True)
+def load_model(model_path):
+    model = YOLO(model_path)
+    return model
+
 
 
 def main():
@@ -99,7 +107,7 @@ def main():
     download_model(model_url, model_path)
 
     # Load the model
-    model = YOLO(model_path)
+    model = load_model(model_path)
     # model = YOLO('best.pt')  # Adjust the path as necessary
 
     # Use st.camera_input to capture an image from the webcam
