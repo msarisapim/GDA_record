@@ -7,6 +7,7 @@ import re
 import gdown
 import os
 
+
 def process_results(result):
     # Define colors for each label in BGR format
     colors = {0: (0, 0, 255),    # Red
@@ -138,12 +139,36 @@ def main():
             # Display the annotated image
             st.image(annotated_image, caption='Processed Image')
 
-            # Display the nutritional values
+            # # Display the nutritional values
+            # st.subheader("Nutritional Values:")
+            # st.write(f"Energy: {nutritional_values.get('Energy', 'N/A')} kcal")
+            # st.write(f"Sugar: {nutritional_values.get('Sugar', 'N/A')} g")
+            # st.write(f"Fat: {nutritional_values.get('Fat', 'N/A')} g")
+            # st.write(f"Sodium: {nutritional_values.get('Sodium', 'N/A')} mg")
+
+            # Display the nutritional values with input fields for manual correction
             st.subheader("Nutritional Values:")
-            st.write(f"Energy: {nutritional_values.get('Energy', 'N/A')} kcal")
-            st.write(f"Sugar: {nutritional_values.get('Sugar', 'N/A')} g")
-            st.write(f"Fat: {nutritional_values.get('Fat', 'N/A')} g")
-            st.write(f"Sodium: {nutritional_values.get('Sodium', 'N/A')} mg")
+            energy = st.text_input("Energy (kcal):", value=nutritional_values.get('Energy', 'N/A'))
+            sugar = st.text_input("Sugar (g):", value=nutritional_values.get('Sugar', 'N/A'))
+            fat = st.text_input("Fat (g):", value=nutritional_values.get('Fat', 'N/A'))
+            sodium = st.text_input("Sodium (mg):", value=nutritional_values.get('Sodium', 'N/A'))
+
+            # Optionally, use the entered values for further processing or display
+            st.write(f"Energy: {energy} kcal")
+            st.write(f"Sugar: {sugar} g")
+            st.write(f"Fat: {fat} g")
+            st.write(f"Sodium: {sodium} mg")
+
+            if st.button('Save'):
+                # Define the filename
+                filename = 'nutritional_values.txt'
+                # Open the file in write mode
+                with open(filename, 'w') as f:
+                    f.write(f"Energy: {energy} kcal\n")
+                    f.write(f"Sugar: {sugar} g\n")
+                    f.write(f"Fat: {fat} g\n")
+                    f.write(f"Sodium: {sodium} mg\n")
+                st.success(f'Nutritional values saved to {filename}.')
 
 if __name__ == "__main__":
     main()
