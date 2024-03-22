@@ -70,7 +70,7 @@ def adjust_image_aspect_ratio(image, target_aspect_ratio=3/4):
         return cropped_image
 
     else:
-        
+
         return image
 
 @st.cache_data
@@ -90,6 +90,48 @@ def img2text(img):
     text_list = reader.readtext(img)
     text = ' '.join([result[1] for result in text_list]) # Extract text from each result tuple and join them into a single string
     return text
+
+@st.cache_data
+def remove_noise_and_convert_to_bw(crop, focus_height_proportion=0.5):
+    # Assume crop is already loaded as an image
+
+    # Convert crop image to grayscale
+    gray_full = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+
+    # Apply a Gaussian blur to the full image to blur everything
+    blurred_full = cv2.GaussianBlur(gray_full, (25, 25), 0)
+
+    # Determine the height of the region of interest based on proportion
+    h, w = gray_full.shape
+    roi_height = int(h * focus_height_proportion)
+    roi_y_start = (h - roi_height) // 2
+
+    # Extract the region of interest from the grayscale image
+    roi_gray = gray_full[roi_y_start:roi_y_start + roi_height, :]
+
+    # Apply CLAHE to the grayscale ROI to reduce noise and enhance contrast
+    clahe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(8, 8))
+    clahe_roi = clahe.apply(roi_gray)
+
+    # Combine the original grayscale image with the CLAHE enhanced center strip
+    enhanced_gray = blurred_full.copy()
+    enhanced_gray[roi_y_start:roi_y_start + roi_height, :] = clahe_roi
+
+    # Apply a median filter to reduce noise throughout the image
+    noise_reduced = cv2.medianBlur(enhanced_gray, 3)
+
+    # Perform dilation followed by erosion to close holes within foreground objects
+    kernel = np.ones((2, 2), np.uint8)
+    dilation = cv2.dilate(noise_reduced, kernel, iterations=3)
+    erosion = cv2.erode(dilation, kernel, iterations=1)
+    dilation = cv2.dilate(erosion, kernel, iterations=2)
+    erosion = cv2.erode(dilation, kernel, iterations=2)
+
+    # Convert the image to black and white
+    # _, bw_image = cv2.threshold(erosion, 125, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    return erosion
+
 
 @st.cache_data
 def extract_1stnum(text):
@@ -173,7 +215,8 @@ def main():
 
             for cls_id, crop in crops.items():
                 crop_gray = img2gray(crop)
-                text = img2text(crop_gray)
+                enhance_image = remove_noise_and_convert_to_bw(crop_gray)
+                text = img2text(enhance_image)
                 val = extract_1stnum(text)
 
                 if cls_id == 0:
