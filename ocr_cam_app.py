@@ -68,10 +68,10 @@ def adjust_image_aspect_ratio(image, target_aspect_ratio=3/4):
     return cropped_image
 
 @st.cache_data
-def resize_image(img, scale_percent):
+def resize_image(img, scale):
     # Calculate the percent of original dimensions
-    width = int(img.shape[1] * scale_percent / 100)
-    height = int(img.shape[0] * scale_percent / 100)
+    width = int(img.shape[1] * scale)
+    height = int(img.shape[0] * scale)
     dim = (width, height)
 
     # Resize image
@@ -125,7 +125,7 @@ def main():
             # Convert the camera image to an OpenCV image
             file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
             captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-            resized_camera_image = resize_image(captured_image, scale_percent=1000)
+            resized_camera_image = resize_image(captured_image, scale_percent=10)
             print('image size', resized_camera_image.shape)
             captured_image = adjust_image_aspect_ratio(resized_camera_image)
     elif choice == "Upload Image":
