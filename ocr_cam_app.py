@@ -8,6 +8,7 @@ import gdown
 import os
 import time
 
+
 @st.cache_data
 def process_results(_result, cache_invalidator):
     colors = {0: (0, 0, 255),    # Red
@@ -40,49 +41,6 @@ def process_results(_result, cache_invalidator):
 
     return cropped_images, image_for_drawing
 
-# def process_results(result):
-#     # Define colors for each label in BGR format
-#     colors = {0: (0, 0, 255),    # Red
-#               1: (255, 255, 100), # Blue
-#               2: (0, 255, 255),  # Green
-#               3: (147, 100, 200)}  # Pink
-#
-#     # Copy the original image for cropping and annotating
-#     orig_image_for_cropping = result.orig_img.copy()
-#     image_for_drawing = result.orig_img.copy()
-#
-#     # Dictionary to hold crops
-#     cropped_images = {}
-#
-#     # Track drawn classes to ensure only one OBB per class
-#     drawn_classes = set()
-#
-#     if result.obb.xyxyxyxy.numel() > 0:
-#         obbs = result.obb.xyxyxyxy.cpu().numpy()
-#         aabbs = result.obb.xyxy.cpu().numpy()
-#         classes = result.obb.cls.cpu().numpy()
-#         confidences = result.obb.conf.cpu().numpy()
-#
-#         # Iterate over detections
-#         for i, (obb, aabb, cls_id, conf) in enumerate(zip(obbs, aabbs, classes, confidences)):
-#             if conf >= 0.2 and cls_id not in drawn_classes:
-#                 # Mark the class as drawn
-#                 drawn_classes.add(cls_id)
-#
-#                 x1, y1, x2, y2 = map(int, aabb)
-#
-#                 if x1 < x2 and y1 < y2 and x1 >= 0 and y1 >= 0 and x2 <= orig_image_for_cropping.shape[1] and y2 <= orig_image_for_cropping.shape[0]:
-#                     crop = orig_image_for_cropping[y1:y2, x1:x2]
-#                     if crop.size > 0:
-#                         cropped_images[cls_id] = crop
-#
-#                 # Draw OBB on the original image
-#                 color = colors.get(cls_id, (255, 255, 255))
-#                 points = obb.reshape((-1, 1, 2)).astype(np.int32)
-#                 cv2.polylines(image_for_drawing, [points], isClosed=True, color=color, thickness=2)
-#
-#     return cropped_images, image_for_drawing
-@st.cache_data
 def img2gray(img):
     img = cv2.fastNlMeansDenoisingColored(img, None, 5, 5, 7, 21)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -140,30 +98,37 @@ def download_model(url, output):
     if not os.path.exists(output):
         gdown.download(url, output, quiet=False)
 
-
 def main():
     st.title("Nutritional Values Detector")
 
-    # Offer the user the choice between using a camera or uploading an image
-    choice = st.radio("Choose input method:", ("Use Camera", "Upload Image"))
-
+    # Initialize captured_image to None at the start of your function
     captured_image = None
 
+    # Present the user with the choice to either use the camera or upload an image
+    choice = st.radio("Choose input method:", ("Use Camera", "Upload Image"))
+
     if choice == "Use Camera":
-        captured_image = st.camera_input("Take a picture")
+        # Camera input
+        camera_image = st.camera_input("Take a picture")
+        if camera_image is not None:
+            # Convert the camera image to an OpenCV image
+            file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
+            captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+            captured_image = adjust_image_aspect_ratio(captured_image)
     elif choice == "Upload Image":
-        captured_image = st.file_uploader("Choose an image", type=['png', 'jpg', 'jpeg'])
+        # File upload
+        uploaded_file = st.file_uploader("Choose an image", type=['png', 'jpg', 'jpeg'])
+        if uploaded_file is not None:
+            # Convert the uploaded file to an OpenCV image
+            file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+            captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
+    # Check if an image has been captured or uploaded successfully
     if captured_image is not None:
-        # Convert the captured image to an OpenCV image
-        file_bytes = np.asarray(bytearray(captured_image.read()), dtype=np.uint8)
-        opencv_image = cv2.imdecode(file_bytes, 1)
+        # Now that we have a valid OpenCV image in captured_image, proceed with your processing logic
 
-        # Adjust the aspect ratio of the image
-        image = adjust_image_aspect_ratio(opencv_image)
-
-        # Convert the image from BGR to RGB
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # Example: Convert the image from BGR to RGB
+        image = cv2.cvtColor(captured_image, cv2.COLOR_BGR2RGB)
 
         # Model URL and path
         model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ'
