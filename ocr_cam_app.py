@@ -214,8 +214,8 @@ def main():
             nutritional_values = {}
 
             for cls_id, crop in crops.items():
-                crop_gray = img2gray(crop)
-                enhance_image = remove_noise_and_convert_to_bw(crop_gray)
+                # crop_gray = img2gray(crop)
+                enhance_image = remove_noise_and_convert_to_bw(crop)
                 text = img2text(enhance_image)
                 val = extract_1stnum(text)
 
