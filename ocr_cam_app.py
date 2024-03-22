@@ -125,7 +125,7 @@ def main():
             # Convert the camera image to an OpenCV image
             file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
             captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-            resized_camera_image = resize_image(captured_image, scale_percent=10)
+            resized_camera_image = resize_image(captured_image, scale=10)
             print('image size', resized_camera_image.shape)
             captured_image = adjust_image_aspect_ratio(resized_camera_image)
     elif choice == "Upload Image":
