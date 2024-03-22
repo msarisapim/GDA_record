@@ -67,7 +67,11 @@ def adjust_image_aspect_ratio(image, target_aspect_ratio=3/4):
             start_y = (height - new_height) // 2
             cropped_image = image[start_y:start_y+new_height, :]
 
-    return cropped_image
+        return cropped_image
+
+    else:
+        
+        return image
 
 @st.cache_data
 def resize_image(img, scale):
