@@ -1,7 +1,7 @@
 # Nutrition Recording System using OCR
 
 <p align="center">
-  <img src="https://i.ibb.co/yBkMNS0/2567-03-20-15-03-48-Window.png" alt="Nutritional Values Detector" width="500"/>
+  <img src="https://i.ibb.co/PCKZ32p/25670322142033224.gif" alt="Nutritional Values Detector" width="500"/>
 </p>
 
 
