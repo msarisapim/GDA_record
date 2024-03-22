@@ -86,7 +86,7 @@ def resize_image(img, scale):
 
 @st.cache_data
 def img2text(img):
-    reader = easyocr.Reader(['th'])
+    reader = easyocr.Reader(['en'])
     text_list = reader.readtext(img)
     text = ' '.join([result[1] for result in text_list]) # Extract text from each result tuple and join them into a single string
     return text
