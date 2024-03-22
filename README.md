@@ -82,15 +82,16 @@ After downloading, save the model file in the same directory as the ocr_app.py s
 To use the script, first clone this repository to your local machine:
 
 ```
-git clone https://github.com/yourusername/your-repository-name.git
-cd your-repository-name
+git clone https://github.com/msarisapim/GDA_record
+cd your/saved/path//GDA_record
 ```
 
 Then, run the Streamlit application:
 ```sh
-streamlit run ocr_app.py
+streamlit run ocr_cam_app.py
 ```
 The Streamlit application will start, and you can navigate to the URL provided in your terminal to interact with the application.
+or access my [Streamlit online gda-cam-app](https://gda-cam-app.streamlit.app/)
 
 ### Features
 - Browse and select images of food packages.
