@@ -6,10 +6,10 @@ import easyocr
 import re
 import gdown
 import os
+import time
 
 @st.cache_data
-def process_results(_result):
-    # Replace 'result' with '_result' inside your function as well
+def process_results(_result, cache_invalidator):
     colors = {0: (0, 0, 255),    # Red
               1: (255, 255, 100), # Blue
               2: (0, 255, 255),  # Green
@@ -88,6 +88,27 @@ def img2gray(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     return gray
 
+@st.cache_data
+def adjust_image_aspect_ratio(image, target_aspect_ratio=3/4):
+    # Get the current dimensions of the image
+    height, width = image.shape[:2]
+
+    # Calculate the current aspect ratio
+    current_aspect_ratio = width / height
+
+    if current_aspect_ratio > target_aspect_ratio:
+        # If the image is too wide, we crop the width
+        new_width = int(target_aspect_ratio * height)
+        start_x = (width - new_width) // 2
+        cropped_image = image[:, start_x:start_x+new_width]
+    else:
+        # If the image is too tall, we crop the height
+        new_height = int(width / target_aspect_ratio)
+        start_y = (height - new_height) // 2
+        cropped_image = image[start_y:start_y+new_height, :]
+
+    return cropped_image
+
 
 @st.cache_data
 def img2text(img):
@@ -123,35 +144,42 @@ def download_model(url, output):
 def main():
     st.title("Nutritional Values Detector")
 
-    # Model URL on Google Drive
-    model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ' #size L
-    # model_url = 'https://drive.google.com/file/d/1Tjf1lVvHf6BMmazxZ0L7sa1rKRFHI9oR/view?usp=sharing' #size n
-    model_path = 'best.pt'
+    # Offer the user the choice between using a camera or uploading an image
+    choice = st.radio("Choose input method:", ("Use Camera", "Upload Image"))
 
-    # Download the model if it doesn't exist
-    download_model(model_url, model_path)
+    captured_image = None
 
-    # Load the model
-    model = YOLO(model_path)
-    # model = YOLO('best.pt')  # Adjust the path as necessary
-
-    # Use st.camera_input to capture an image from the webcam
-    captured_image = st.camera_input("Take a picture or upload one")
+    if choice == "Use Camera":
+        captured_image = st.camera_input("Take a picture")
+    elif choice == "Upload Image":
+        captured_image = st.file_uploader("Choose an image", type=['png', 'jpg', 'jpeg'])
 
     if captured_image is not None:
         # Convert the captured image to an OpenCV image
         file_bytes = np.asarray(bytearray(captured_image.read()), dtype=np.uint8)
-        image = cv2.imdecode(file_bytes, 1)
+        opencv_image = cv2.imdecode(file_bytes, 1)
+
+        # Adjust the aspect ratio of the image
+        image = adjust_image_aspect_ratio(opencv_image)
 
         # Convert the image from BGR to RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # Model URL and path
+        model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ'
+        model_path = 'best.pt'
+
+        # Download and load the model
+        download_model(model_url, model_path)
+        model = YOLO(model_path)
 
         # Process the image
         results = model.predict(image)
 
         for result in results:
-            # crops, annotated_image = process_results(result)
-            crops, annotated_image = process_results(_result=result)
+            # Generate a timestamp or other unique identifier as cache invalidator
+            cache_invalidator = int(time.time())
+            crops, annotated_image = process_results(_result=result, cache_invalidator=cache_invalidator)
 
             nutritional_values = {}
 
@@ -172,36 +200,17 @@ def main():
             # Display the annotated image
             st.image(annotated_image, caption='Processed Image')
 
-            # # Display the nutritional values
-            # st.subheader("Nutritional Values:")
-            # st.write(f"Energy: {nutritional_values.get('Energy', 'N/A')} kcal")
-            # st.write(f"Sugar: {nutritional_values.get('Sugar', 'N/A')} g")
-            # st.write(f"Fat: {nutritional_values.get('Fat', 'N/A')} g")
-            # st.write(f"Sodium: {nutritional_values.get('Sodium', 'N/A')} mg")
-
             # Display the nutritional values with input fields for manual correction
             st.subheader("Nutritional Values:")
-            energy = st.text_input("Energy (kcal):", value=nutritional_values.get('Energy', 'N/A'))
-            sugar = st.text_input("Sugar (g):", value=nutritional_values.get('Sugar', 'N/A'))
-            fat = st.text_input("Fat (g):", value=nutritional_values.get('Fat', 'N/A'))
-            sodium = st.text_input("Sodium (mg):", value=nutritional_values.get('Sodium', 'N/A'))
+            energy = st.text_input("Energy (kcal):", value=str(nutritional_values.get('Energy', 'N/A')))
+            sugar = st.text_input("Sugar (g):", value=str(nutritional_values.get('Sugar', 'N/A')))
+            fat = st.text_input("Fat (g):", value=str(nutritional_values.get('Fat', 'N/A')))
+            sodium = st.text_input("Sodium (mg):", value=str(nutritional_values.get('Sodium', 'N/A')))
 
             # Optionally, use the entered values for further processing or display
-            st.write(f"Energy: {energy} kcal")
-            st.write(f"Sugar: {sugar} g")
-            st.write(f"Fat: {fat} g")
-            st.write(f"Sodium: {sodium} mg")
-
-            if st.button('Save'):
-                # Define the filename
-                filename = 'nutritional_values.txt'
-                # Open the file in write mode
-                with open(filename, 'w') as f:
-                    f.write(f"Energy: {energy} kcal\n")
-                    f.write(f"Sugar: {sugar} g\n")
-                    f.write(f"Fat: {fat} g\n")
-                    f.write(f"Sodium: {sodium} mg\n")
-                st.success(f'Nutritional values saved to {filename}.')
+            if st.button('Save Nutritional Values'):
+                # Save functionality or further processing can be added here
+                st.success("Nutritional values have been saved/processed.")
 
 if __name__ == "__main__":
     main()
