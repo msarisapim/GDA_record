@@ -54,16 +54,18 @@ def adjust_image_aspect_ratio(image, target_aspect_ratio=3/4):
     # Calculate the current aspect ratio
     current_aspect_ratio = width / height
 
-    if current_aspect_ratio > target_aspect_ratio:
-        # If the image is too wide, we crop the width
-        new_width = int(target_aspect_ratio * height)
-        start_x = (width - new_width) // 2
-        cropped_image = image[:, start_x:start_x+new_width]
-    else:
-        # If the image is too tall, we crop the height
-        new_height = int(width / target_aspect_ratio)
-        start_y = (height - new_height) // 2
-        cropped_image = image[start_y:start_y+new_height, :]
+    if height < width:
+
+        if current_aspect_ratio > target_aspect_ratio:
+            # If the image is too wide, we crop the width
+            new_width = int(target_aspect_ratio * height)
+            start_x = (width - new_width) // 2
+            cropped_image = image[:, start_x:start_x+new_width]
+        else:
+            # If the image is too tall, we crop the height
+            new_height = int(width / target_aspect_ratio)
+            start_y = (height - new_height) // 2
+            cropped_image = image[start_y:start_y+new_height, :]
 
     return cropped_image
 
@@ -125,9 +127,9 @@ def main():
             # Convert the camera image to an OpenCV image
             file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
             captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-            captured_image = resize_image(captured_image, scale=10)
-            print('image size', captured_image.shape)
-            # captured_image = adjust_image_aspect_ratio(resized_camera_image)
+            resized_camera_image = resize_image(captured_image, scale=10)
+            print('image size', resized_camera_image.shape)
+            captured_image = adjust_image_aspect_ratio(resized_camera_image)
     elif choice == "Upload Image":
         # File upload
         uploaded_file = st.file_uploader("Choose an image", type=['png', 'jpg', 'jpeg'])
