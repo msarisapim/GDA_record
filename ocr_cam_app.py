@@ -67,10 +67,20 @@ def adjust_image_aspect_ratio(image, target_aspect_ratio=3/4):
 
     return cropped_image
 
+@st.cache_data
+def resize_image(img, scale_percent):
+    # Calculate the percent of original dimensions
+    width = int(img.shape[1] * scale_percent / 100)
+    height = int(img.shape[0] * scale_percent / 100)
+    dim = (width, height)
+
+    # Resize image
+    resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+    return resized
 
 @st.cache_data
 def img2text(img):
-    reader = easyocr.Reader(['th'])
+    reader = easyocr.Reader(['en'])
     text_list = reader.readtext(img)
     text = ' '.join([result[1] for result in text_list]) # Extract text from each result tuple and join them into a single string
     return text
@@ -98,6 +108,7 @@ def download_model(url, output):
     if not os.path.exists(output):
         gdown.download(url, output, quiet=False)
 
+
 def main():
     st.title("Nutritional Values Detector")
 
@@ -114,7 +125,9 @@ def main():
             # Convert the camera image to an OpenCV image
             file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
             captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-            captured_image = adjust_image_aspect_ratio(captured_image)
+            resized_camera_image = resize_image(captured_image, scale_percent=1000)
+            print('image size', resized_camera_image.shape)
+            captured_image = adjust_image_aspect_ratio(resized_camera_image)
     elif choice == "Upload Image":
         # File upload
         uploaded_file = st.file_uploader("Choose an image", type=['png', 'jpg', 'jpeg'])
@@ -122,6 +135,7 @@ def main():
             # Convert the uploaded file to an OpenCV image
             file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
             captured_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+            print('image size', captured_image.shape)
 
     # Check if an image has been captured or uploaded successfully
     if captured_image is not None:
@@ -129,6 +143,9 @@ def main():
 
         # Example: Convert the image from BGR to RGB
         image = cv2.cvtColor(captured_image, cv2.COLOR_BGR2RGB)
+
+        # Debug: Display the pre-processed image
+        st.image(image, caption="Pre-processed Image", use_column_width=True)
 
         # Model URL and path
         model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ'
