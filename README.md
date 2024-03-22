@@ -1,7 +1,9 @@
 # Nutrition Recording System using OCR
 
-![Nutritional Values Detector](https://i.ibb.co/PCKZ32p/25670322142033224.gif)
 
+<p align="center">
+  <img src="https://i.ibb.co/F4dgbCV/2567-03-20-15-03-48-Window.png" alt="Nutritional Values Detector" width="500"/>
+</p>
 
 
 Developed an innovative Nutrition Recording System aimed at streamlining dietary tracking by integrating YOLO (You Only Look Once) object detection with Optical Character Recognition (OCR). This system is designed to automatically identify and analyze nutritional information from food packaging, enabling users to effortlessly record and monitor their dietary intake. Here's the workflow of this project:
