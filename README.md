@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img src="https://i.ibb.co/F4dgbCV/2567-03-20-15-03-48-Window.png" alt="Nutritional Values Detector" width="500"/>
+  <img src="https://i.ibb.co/svLtZmB/app.png" alt="Nutritional Values Detector" width="500"/>
 </p>
 
 
