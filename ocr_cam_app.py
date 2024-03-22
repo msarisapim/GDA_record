@@ -80,7 +80,7 @@ def resize_image(img, scale):
 
 @st.cache_data
 def img2text(img):
-    reader = easyocr.Reader(['en'])
+    reader = easyocr.Reader(['th'])
     text_list = reader.readtext(img)
     text = ' '.join([result[1] for result in text_list]) # Extract text from each result tuple and join them into a single string
     return text
@@ -145,7 +145,7 @@ def main():
         image = cv2.cvtColor(captured_image, cv2.COLOR_BGR2RGB)
 
         # Debug: Display the pre-processed image
-        st.image(image, caption="Pre-processed Image", use_column_width=True)
+        # st.image(image, caption="Pre-processed Image", use_column_width=True)
 
         # Model URL and path
         model_url = 'https://drive.google.com/uc?id=19kEKnJX-y_HOth28yiWn-xp1QTjajOJQ'
