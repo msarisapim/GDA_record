@@ -21,7 +21,7 @@ Developed an innovative Nutrition Recording System aimed at streamlining dietary
   - Rotate/Skew
 
 3.  OCR part
-- Extract only 1st number
+- Extract only upper number (not a percent one)
 
 The experiments are shown in a notebook (GDA_yolo_OCR.ipynb)
 --------
